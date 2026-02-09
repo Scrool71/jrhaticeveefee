@@ -4,11 +4,11 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Bizim Hikaye 💘</title>
-  <meta name="description" content="Aşağı kaydırdıkça bizim hikayemiz..." />
   <style>
     :root{
       --bg:#0b0b10;
-      --card:#12121a;
+      --card: rgba(255,255,255,.06);
+      --border: rgba(255,255,255,.12);
       --txt:#f5f5ff;
       --muted:#b8b8d6;
       --accent:#ff4fd8;
@@ -17,8 +17,8 @@
       --radius: 22px;
     }
     *{box-sizing:border-box}
+    html,body{margin:0;padding:0;width:100%;height:100%;overflow-x:hidden}
     body{
-      margin:0;
       font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial;
       color:var(--txt);
       background:
@@ -26,11 +26,31 @@
         radial-gradient(900px 600px at 80% 15%, rgba(124,92,255,.22), transparent 55%),
         radial-gradient(900px 600px at 50% 90%, rgba(255,255,255,.06), transparent 55%),
         var(--bg);
-      overflow-x:hidden;
     }
-    a{color:inherit}
 
-    /* Giriş kilidi */
+    /* Background floating hearts */
+    .hearts-bg{
+      position:fixed; inset:0;
+      pointer-events:none;
+      overflow:hidden;
+      z-index:0;
+    }
+    .bg-heart{
+      position:absolute;
+      bottom:-60px;
+      font-size: 18px;
+      opacity:.0;
+      filter: drop-shadow(0 10px 25px rgba(255,79,216,.15));
+      animation: floatUp linear forwards;
+      will-change: transform, opacity;
+    }
+    @keyframes floatUp{
+      0%{ transform: translateY(0) translateX(0) scale(.8) rotate(0deg); opacity:0; }
+      10%{ opacity:.55; }
+      100%{ transform: translateY(-120vh) translateX(var(--drift, 0px)) scale(1.25) rotate(25deg); opacity:0; }
+    }
+
+    /* Gate modal */
     #gate{
       position:fixed; inset:0;
       display:grid; place-items:center;
@@ -42,7 +62,7 @@
     .modal{
       width:min(560px, 100%);
       background: linear-gradient(180deg, rgba(255,255,255,.08), rgba(255,255,255,.04));
-      border: 1px solid rgba(255,255,255,.12);
+      border: 1px solid var(--border);
       border-radius: var(--radius);
       box-shadow: var(--shadow);
       padding:24px;
@@ -52,8 +72,9 @@
     .modal:before{
       content:"";
       position:absolute; inset:-2px;
-      background: radial-gradient(400px 200px at 20% 20%, rgba(255,79,216,.35), transparent 55%),
-                  radial-gradient(400px 200px at 80% 30%, rgba(124,92,255,.35), transparent 55%);
+      background:
+        radial-gradient(400px 200px at 20% 20%, rgba(255,79,216,.35), transparent 55%),
+        radial-gradient(400px 200px at 80% 30%, rgba(124,92,255,.35), transparent 55%);
       filter: blur(18px);
       opacity:.7;
       z-index:-1;
@@ -63,11 +84,11 @@
       padding:10px 14px;
       border-radius: 999px;
       background: rgba(255,255,255,.08);
-      border:1px solid rgba(255,255,255,.12);
+      border:1px solid var(--border);
       font-size:13px;
       color:var(--muted);
     }
-    .heart{
+    .heartIcon{
       width:18px; height:18px; display:inline-block;
       background: conic-gradient(from 180deg, var(--accent), var(--accent2));
       mask: radial-gradient(circle at 30% 35%, transparent 10px, #000 0) top left / 50% 50% no-repeat,
@@ -76,41 +97,22 @@
       border-radius:2px;
       transform: rotate(45deg);
     }
-    h1{
-      margin:14px 0 10px;
-      font-size: clamp(24px, 3.4vw, 34px);
-      line-height:1.05;
-      letter-spacing:-.02em;
-    }
+    h1{ margin:14px 0 10px; font-size: clamp(24px, 3.4vw, 34px); line-height:1.05; letter-spacing:-.02em; }
     .muted{color:var(--muted); line-height:1.55}
-    .actions{
-      display:flex; gap:12px; margin-top:18px; flex-wrap:wrap;
-    }
+    .actions{ display:flex; gap:12px; margin-top:18px; flex-wrap:wrap; }
     button{
       border:0;
       padding:12px 16px;
       border-radius: 14px;
       cursor:pointer;
-      font-weight:700;
+      font-weight:800;
       font-size:14px;
       transition: transform .08s ease, filter .2s ease, opacity .2s ease;
     }
     button:active{transform: scale(.98)}
-    .yes{
-      background: linear-gradient(135deg, var(--accent), var(--accent2));
-      color:white;
-      box-shadow: 0 14px 30px rgba(255,79,216,.18);
-    }
-    .no{
-      background: rgba(255,255,255,.10);
-      color:var(--txt);
-      border:1px solid rgba(255,255,255,.14);
-    }
-    .tiny{
-      margin-top:12px;
-      font-size:12px;
-      color:rgba(255,255,255,.55);
-    }
+    .yes{ background: linear-gradient(135deg, var(--accent), var(--accent2)); color:white; }
+    .no{ background: rgba(255,255,255,.10); color:var(--txt); border:1px solid rgba(255,255,255,.14); }
+    .tiny{ margin-top:12px; font-size:12px; color:rgba(255,255,255,.55); }
     .shake{animation: shake .35s ease}
     @keyframes shake{
       0%,100%{transform:translateX(0)}
@@ -120,16 +122,14 @@
       80%{transform:translateX(6px)}
     }
 
-    /* Sayfa */
+    /* Page layout */
+    .wrap{ position:relative; z-index:1; width:min(1100px, 100%); margin:0 auto; padding:0 18px 90px; }
     header{
       min-height: 92vh;
       display:grid;
       place-items:center;
-      padding: 90px 18px 60px;
+      padding: 90px 0 60px;
       text-align:center;
-    }
-    .hero{
-      width:min(980px,100%);
     }
     .title{
       font-size: clamp(34px, 5.2vw, 64px);
@@ -152,7 +152,7 @@
       padding: 10px 14px;
       border-radius: 999px;
       background: rgba(255,255,255,.07);
-      border:1px solid rgba(255,255,255,.12);
+      border:1px solid var(--border);
       color: rgba(255,255,255,.75);
       font-size: 13px;
     }
@@ -162,38 +162,24 @@
       box-shadow:0 0 20px rgba(255,79,216,.35);
     }
 
-    main{
-      width:min(1100px, 100%);
-      margin: 0 auto;
-      padding: 0 18px 90px;
-      display:flex;
-      flex-direction:column;
-      gap:18px;
-    }
+    main{ display:flex; flex-direction:column; gap:18px; }
     .section{
       display:grid;
       grid-template-columns: 1.1fr .9fr;
       gap:18px;
       align-items:stretch;
     }
-    @media (max-width: 860px){
-      .section{grid-template-columns:1fr}
-    }
+    @media (max-width: 860px){ .section{grid-template-columns:1fr} }
+
     .card{
-      background: rgba(255,255,255,.06);
-      border: 1px solid rgba(255,255,255,.12);
+      background: var(--card);
+      border: 1px solid var(--border);
       border-radius: var(--radius);
       box-shadow: var(--shadow);
       overflow:hidden;
     }
-    .cardInner{
-      padding: 20px;
-    }
-    .card h2{
-      margin:0 0 10px;
-      font-size: 22px;
-      letter-spacing:-.02em;
-    }
+    .cardInner{ padding: 20px; }
+    .card h2{ margin:0 0 10px; font-size: 22px; letter-spacing:-.02em; }
     .pill{
       display:inline-flex;
       gap:10px;
@@ -201,30 +187,36 @@
       padding:8px 12px;
       border-radius:999px;
       background: rgba(255,255,255,.07);
-      border:1px solid rgba(255,255,255,.12);
+      border:1px solid var(--border);
       color: var(--muted);
       font-size:12px;
       margin-bottom: 10px;
     }
     .photo{
       width:100%;
-      height:100%;
-      min-height: 280px;
-      background-size: cover;
-      background-position: center;
+      min-height: 320px;
       position:relative;
+      background:#0f0f15;
+    }
+    .photo img{
+      width:100%;
+      height:100%;
+      min-height: 320px;
+      object-fit: cover;
+      display:block;
     }
     .photo:after{
       content:"";
       position:absolute; inset:0;
-      background: linear-gradient(180deg, transparent 40%, rgba(0,0,0,.55));
+      background: linear-gradient(180deg, transparent 45%, rgba(0,0,0,.55));
+      pointer-events:none;
     }
     .caption{
       position:absolute;
       left:16px; right:16px; bottom:14px;
       z-index:1;
       color: rgba(255,255,255,.92);
-      font-weight:700;
+      font-weight:900;
       text-shadow: 0 8px 20px rgba(0,0,0,.55);
     }
 
@@ -234,142 +226,141 @@
       transform: translateY(18px);
       transition: opacity .75s ease, transform .75s ease;
     }
-    .reveal.show{
-      opacity:1;
-      transform: translateY(0);
-    }
+    .reveal.show{ opacity:1; transform: translateY(0); }
 
     footer{
-      padding: 26px 18px 40px;
+      padding: 26px 0 40px;
       text-align:center;
       color: rgba(255,255,255,.55);
       font-size: 13px;
+    }
+
+    /* Click hearts */
+    .pop-heart{
+      position:fixed;
+      left:0; top:0;
+      pointer-events:none;
+      font-size: 18px;
+      animation: pop 900ms ease forwards;
+      filter: drop-shadow(0 12px 28px rgba(255,79,216,.22));
+      z-index: 9998;
+    }
+    @keyframes pop{
+      0%{ transform: translate(-50%,-50%) scale(.6); opacity:0; }
+      15%{ opacity:1; }
+      100%{ transform: translate(-50%,-130%) scale(1.4) rotate(12deg); opacity:0; }
     }
   </style>
 </head>
 <body>
 
-  <!-- Giriş Sözleşme Modal -->
+  <!-- background hearts -->
+  <div class="hearts-bg" id="heartsBg"></div>
+
+  <!-- gate -->
   <div id="gate" aria-hidden="false">
     <div class="modal" id="modal">
-      <div class="badge"><span class="heart"></span> İlişki Sözleşmesi v1.0</div>
+      <div class="badge"><span class="heartIcon"></span> İlişki Sözleşmesi v1.0</div>
       <h1>Sözleşmeyi imzalamak ister misin?</h1>
       <p class="muted" id="gateText">
-        Bu sözleşme: bol kahkaha, sonsuz destek, kıskançlıktan değil sevgiden gelen minik tripler ve “iyi ki”leri içerir.
-        Aşağı kaydırınca da bizim hikaye akmaya başlıyor. ✨
+        Bu sözleşme: bol kahkaha, sonsuz destek, “iyi ki”ler ve birlikte büyüyen bir biz içerir. 💘
       </p>
       <div class="actions">
         <button class="yes" id="btnYes">Evet, imzalıyorum 💍</button>
         <button class="no" id="btnNo">Hayır 🙃</button>
       </div>
-      <div class="tiny" id="tinyNote">* İmza atınca geri dönüş yok (şaka şaka). Ama kalbime giriyorsun.</div>
+      <div class="tiny" id="tinyNote">* Evet deyince sürpriz başlıyor.</div>
     </div>
   </div>
 
-  <!-- Asıl Sayfa -->
-  <header class="reveal">
-    <div class="hero">
-      <h2 class="badge" style="justify-content:center;"><span class="dot"></span> Bizim Hikayemiz</h2>
-      <h1 class="title">Sen + Ben = <span style="background:linear-gradient(135deg,var(--accent),var(--accent2)); -webkit-background-clip:text; background-clip:text; color:transparent;">kaderin en tatlı hatası</span></h1>
-      <p class="subtitle">
-        Aşağı kaydır… Her bölümde bir anı, bir foto, bir cümle. Bunu senin için yaptım (evet biraz da hava atmak için 😌).
-      </p>
-      <div class="scrollhint"><span class="dot"></span> Aşağı kaydır</div>
-    </div>
-  </header>
+  <div class="wrap">
+    <header class="reveal">
+      <div>
+        <h2 class="badge" style="justify-content:center;"><span class="dot"></span> Bizim Hikayemiz</h2>
+        <h1 class="title">Sen + Ben = <span style="background:linear-gradient(135deg,var(--accent),var(--accent2));-webkit-background-clip:text;background-clip:text;color:transparent;">en tatlı tesadüf</span></h1>
+        <p class="subtitle">Aşağı kaydır… Her bölümde bir anı, bir foto, bir cümle. (Kalpler de bonus 😌)</p>
+        <div class="scrollhint"><span class="dot"></span> Aşağı kaydır</div>
+      </div>
+    </header>
 
-  <main>
-    <!-- Bölüm 1 -->
-    <section class="section reveal">
-      <div class="card">
-        <div class="cardInner">
-          <div class="pill">📍 Bölüm 1 • Tanışma</div>
-          <h2>İlk gün… “Bu kız farklı” dediğim an</h2>
-          <p class="muted">
-            İnstadan geç de olsa görmüş olman sayesinde konu nereye geldi :d
-            (Örnek: “Gülüşünle bütün günüm değişti.”)
-          </p>
-          <p class="muted">
-            <b>Mini not:</b> Her zaman bir yolunu bulup Hallederiz :).
-          </p>
+    <main>
+      <!-- 1 -->
+      <section class="section reveal">
+        <div class="card">
+          <div class="cardInner">
+            <div class="pill">📍 Bölüm 1 • Tanışma</div>
+            <h2>İlk gün… “bu kız başka” dediğim an</h2>
+            <p class="muted">Buraya kendi hikayenizi yaz. Kısa, vurucu, içten.</p>
+          </div>
         </div>
-      </div>
-      <div class="card">
-        <div class="photo" style="<img src="https://i.imgur.com/XXXXX.jpg">;">
-          <div class="caption">“O gün başladı her şey.”</div>
+        <div class="card">
+          <div class="photo">
+            <img src="images/1.jpg" alt="foto1">
+            <div class="caption">“O gün başladı her şey.”</div>
+          </div>
         </div>
-      </div>
-    </section>
+      </section>
 
-    <!-- Bölüm 2 -->
-    <section class="section reveal">
-      <div class="card">
-        <div class="photo" style="background-image:url('https://pasteboard.co/kk6dcBhVwFr6.png');">
-          <div class="caption">İlk buluşma vibes ✨</div>
+      <!-- 2 -->
+      <section class="section reveal">
+        <div class="card">
+          <div class="photo">
+            <img src="images/2.jpg" alt="foto2">
+            <div class="caption">İlk buluşma vibes ✨</div>
+          </div>
         </div>
-      </div>
-      <div class="card">
-        <div class="cardInner">
-          <div class="pill">☕ Bölüm 2 • İlk Buluşma</div>
-          <h2>“Hayatta ki en güzel tesadüf"</h2>
-          <p class="muted">
-            Kulaklık takılı ve arkada tek bir müzik. DKTT= Dilerim ki.
-          </p>
-          <p class="muted">
-            <i>“Ne olursa olsun yanında olacağım.”</i>
-          </p>
+        <div class="card">
+          <div class="cardInner">
+            <div class="pill">☕ Bölüm 2 • İlk Buluşma</div>
+            <h2>“Şuraya gidelim” dediğin an ben tamamım</h2>
+            <p class="muted">O günün detayları: mekan, şarkı, komik an…</p>
+          </div>
         </div>
-      </div>
-    </section>
+      </section>
 
-    <!-- Bölüm 3 -->
-    <section class="section reveal">
-      <div class="card">
-        <div class="cardInner">
-          <div class="pill">📸 Bölüm 3 • Anılar</div>
-          <h2>En sevdiğim 3 şey</h2>
-          <p class="muted">1) Gülüşün</p>
-          <p class="muted">2) “Anlayışın” bakışın</p>
-          <p class="muted">3) Yanımdayken dünyanın susması</p>
-          <p class="muted">
-           
-          </p>
+      <!-- 3 -->
+      <section class="section reveal">
+        <div class="card">
+          <div class="cardInner">
+            <div class="pill">📸 Bölüm 3 • Anılar</div>
+            <h2>En sevdiğim 3 şey</h2>
+            <p class="muted">1) Gülüşün</p>
+            <p class="muted">2) Yanımdayken dünyanın susması</p>
+            <p class="muted">3) “Biz” olmayı becermemiz</p>
+          </div>
         </div>
-      </div>
-      <div class="card">
-        <div class="photo" style="background-image:url('https://pasteboard.co/DtmocH3QLlcP.jpg');">
-          <div class="caption">“Seninle her yer güzel.”</div>
+        <div class="card">
+          <div class="photo">
+            <img src="images/3.jpg" alt="foto3">
+            <div class="caption">“Seninle her yer güzel.”</div>
+          </div>
         </div>
-      </div>
-    </section>
+      </section>
 
-    <!-- Final -->
-    <section class="section reveal">
-      <div class="card">
-        <div class="photo" style="background-image:url('https://images.unsplash.com/photo-1516589178581-6cd7833ae3b2?auto=format&fit=crop&w=1600&q=80');">
-          <div class="caption">Final Sahnesi 💘</div>
+      <!-- final -->
+      <section class="section reveal">
+        <div class="card">
+          <div class="photo">
+            <img src="images/4.jpg" alt="foto4">
+            <div class="caption">Final Sahnesi 💘</div>
+          </div>
         </div>
-      </div>
-      <div class="card">
-        <div class="cardInner">
-          <div class="pill">📝 Final • Söz</div>
-          <h2>Bir cümleyle: “Biz”</h2>
-          <p class="muted">
-            <b>“Ben senin en güvenli yerinim.”</b>
-          </p>
-          <p class="muted">
-            <b>— (Efe)</b>
-          </p>
+        <div class="card">
+          <div class="cardInner">
+            <div class="pill">📝 Final • Söz</div>
+            <h2>Bir cümleyle: “Biz”</h2>
+            <p class="muted"><b>“Ben senin en güvenli yerinim.”</b></p>
+            <p class="muted">— Efe</p>
+          </div>
         </div>
-      </div>
-    </section>
-  </main>
+      </section>
+    </main>
 
-  <footer class="reveal">
-    Made with 💖 • “Evet” deyince başlayan güzel şeyler var.
-  </footer>
+    <footer class="reveal">Made with 💖 • “Evet” deyince başlayan güzel şeyler var.</footer>
+  </div>
 
   <script>
+    // Gate
     const gate = document.getElementById('gate');
     const modal = document.getElementById('modal');
     const btnYes = document.getElementById('btnYes');
@@ -377,31 +368,24 @@
     const gateText = document.getElementById('gateText');
     const tinyNote = document.getElementById('tinyNote');
 
-    // Kilit açılınca sayfayı yukarıdan başlat
-    function unlock(){
+    document.body.style.overflowY = 'hidden';
+
+    btnYes.addEventListener('click', () => {
       gate.style.display = 'none';
       document.body.style.overflowY = 'auto';
       window.scrollTo({top:0, behavior:'instant'});
-      revealAll(); // ilk ekranı da göster
-    }
-
-    // Başlangıçta scroll'u kitleyelim (daha tatlı durur)
-    document.body.style.overflowY = 'hidden';
-
-    btnYes.addEventListener('click', () => unlock());
+      revealAll();
+    });
 
     btnNo.addEventListener('click', () => {
-      modal.classList.remove('shake');
-      void modal.offsetWidth; // reflow
-      modal.classList.add('shake');
-
-      gateText.textContent = "Hayır mı? Şimdi kalbimden bir bildirim düştü: “Eksik hissettim.” 🙃 Yine de bir şans ver…";
-      tinyNote.textContent = "İpucu: Evet’e basınca tatlı bir sürpriz başlıyor.";
+      modal.classList.remove('shake'); void modal.offsetWidth; modal.classList.add('shake');
+      gateText.textContent = "Hayır mı? Kalbime bir bildirim düştü: “eksik hissettim.” 🙃 Yine de bir şans ver…";
+      tinyNote.textContent = "İpucu: Evet’e basınca tatlı sürpriz başlıyor.";
       btnNo.textContent = "Tamam tamam 😅";
       btnYes.textContent = "Evet (özür dilerim)";
     });
 
-    // Scroll reveal (IntersectionObserver)
+    // Scroll reveal
     const revealEls = Array.from(document.querySelectorAll('.reveal'));
     const io = new IntersectionObserver((entries) => {
       for (const e of entries){
@@ -411,40 +395,50 @@
         }
       }
     }, {threshold: 0.12});
-
-    function revealAll(){
-      revealEls.forEach(el => io.observe(el));
-    }
+    function revealAll(){ revealEls.forEach(el => io.observe(el)); }
     revealAll();
+
+    // Background hearts generator
+    const heartsBg = document.getElementById('heartsBg');
+    const heartChars = ["💗","💖","💘","💝","💞"];
+    function spawnBgHeart(){
+      const h = document.createElement('div');
+      h.className = 'bg-heart';
+      h.textContent = heartChars[Math.floor(Math.random()*heartChars.length)];
+      const left = Math.random()*100;
+      const dur = 7 + Math.random()*6; // 7-13s
+      const size = 14 + Math.random()*18;
+      const drift = (Math.random()*2-1) * 120; // -120..120
+
+      h.style.left = left + 'vw';
+      h.style.animationDuration = dur + 's';
+      h.style.fontSize = size + 'px';
+      h.style.setProperty('--drift', drift + 'px');
+
+      heartsBg.appendChild(h);
+      // cleanup
+      setTimeout(() => h.remove(), (dur+0.5)*1000);
+    }
+    setInterval(spawnBgHeart, 450);
+
+    // Click pop hearts
+    window.addEventListener('click', (e) => {
+      // gate açıksa tıklama efekti vermeyelim
+      if (gate.style.display !== 'none') return;
+
+      for (let i=0;i<5;i++){
+        const ph = document.createElement('div');
+        ph.className = 'pop-heart';
+        ph.textContent = heartChars[Math.floor(Math.random()*heartChars.length)];
+        const jitterX = (Math.random()*2-1)*24;
+        const jitterY = (Math.random()*2-1)*18;
+        ph.style.left = (e.clientX + jitterX) + 'px';
+        ph.style.top  = (e.clientY + jitterY) + 'px';
+        ph.style.fontSize = (14 + Math.random()*18) + 'px';
+        document.body.appendChild(ph);
+        setTimeout(() => ph.remove(), 950);
+      }
+    });
   </script>
 </body>
 </html>
-<style>
-  html, body{
-    margin:0;
-    padding:0;
-    width:100%;
-    height:100%;
-    overflow-x:hidden;
-    background:#000;
-  }
-
-  .wrap{
-    width:100%;
-    max-width:1100px;   /* istersen 100% de yaparız */
-    margin:0 auto;
-    padding:0 16px;
-  }
-
-  img{
-    width:100%;
-    height:auto;
-    display:block;
-    border-radius:18px; /* istersen kaldır */
-  }
-
-  .section{
-    padding:24px 0;
-  }
-</style>
-
