@@ -1,0 +1,449 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Bizim Hikaye 💘</title>
+  <meta name="description" content="Aşağı kaydırdıkça bizim hikayemiz..." />
+  <style>
+    :root{
+      --bg:#0b0b10;
+      --card:#12121a;
+      --txt:#f5f5ff;
+      --muted:#b8b8d6;
+      --accent:#ff4fd8;
+      --accent2:#7c5cff;
+      --shadow: 0 20px 60px rgba(0,0,0,.35);
+      --radius: 22px;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial;
+      color:var(--txt);
+      background:
+        radial-gradient(900px 600px at 20% 10%, rgba(255,79,216,.25), transparent 60%),
+        radial-gradient(900px 600px at 80% 15%, rgba(124,92,255,.22), transparent 55%),
+        radial-gradient(900px 600px at 50% 90%, rgba(255,255,255,.06), transparent 55%),
+        var(--bg);
+      overflow-x:hidden;
+    }
+    a{color:inherit}
+
+    /* Giriş kilidi */
+    #gate{
+      position:fixed; inset:0;
+      display:grid; place-items:center;
+      padding:24px;
+      background: rgba(10,10,16,.72);
+      backdrop-filter: blur(10px);
+      z-index:9999;
+    }
+    .modal{
+      width:min(560px, 100%);
+      background: linear-gradient(180deg, rgba(255,255,255,.08), rgba(255,255,255,.04));
+      border: 1px solid rgba(255,255,255,.12);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding:24px;
+      position:relative;
+      overflow:hidden;
+    }
+    .modal:before{
+      content:"";
+      position:absolute; inset:-2px;
+      background: radial-gradient(400px 200px at 20% 20%, rgba(255,79,216,.35), transparent 55%),
+                  radial-gradient(400px 200px at 80% 30%, rgba(124,92,255,.35), transparent 55%);
+      filter: blur(18px);
+      opacity:.7;
+      z-index:-1;
+    }
+    .badge{
+      display:inline-flex; align-items:center; gap:10px;
+      padding:10px 14px;
+      border-radius: 999px;
+      background: rgba(255,255,255,.08);
+      border:1px solid rgba(255,255,255,.12);
+      font-size:13px;
+      color:var(--muted);
+    }
+    .heart{
+      width:18px; height:18px; display:inline-block;
+      background: conic-gradient(from 180deg, var(--accent), var(--accent2));
+      mask: radial-gradient(circle at 30% 35%, transparent 10px, #000 0) top left / 50% 50% no-repeat,
+            radial-gradient(circle at 70% 35%, transparent 10px, #000 0) top right / 50% 50% no-repeat,
+            linear-gradient(#000 0 0) bottom / 100% 60% no-repeat;
+      border-radius:2px;
+      transform: rotate(45deg);
+    }
+    h1{
+      margin:14px 0 10px;
+      font-size: clamp(24px, 3.4vw, 34px);
+      line-height:1.05;
+      letter-spacing:-.02em;
+    }
+    .muted{color:var(--muted); line-height:1.55}
+    .actions{
+      display:flex; gap:12px; margin-top:18px; flex-wrap:wrap;
+    }
+    button{
+      border:0;
+      padding:12px 16px;
+      border-radius: 14px;
+      cursor:pointer;
+      font-weight:700;
+      font-size:14px;
+      transition: transform .08s ease, filter .2s ease, opacity .2s ease;
+    }
+    button:active{transform: scale(.98)}
+    .yes{
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      color:white;
+      box-shadow: 0 14px 30px rgba(255,79,216,.18);
+    }
+    .no{
+      background: rgba(255,255,255,.10);
+      color:var(--txt);
+      border:1px solid rgba(255,255,255,.14);
+    }
+    .tiny{
+      margin-top:12px;
+      font-size:12px;
+      color:rgba(255,255,255,.55);
+    }
+    .shake{animation: shake .35s ease}
+    @keyframes shake{
+      0%,100%{transform:translateX(0)}
+      20%{transform:translateX(-8px)}
+      40%{transform:translateX(8px)}
+      60%{transform:translateX(-6px)}
+      80%{transform:translateX(6px)}
+    }
+
+    /* Sayfa */
+    header{
+      min-height: 92vh;
+      display:grid;
+      place-items:center;
+      padding: 90px 18px 60px;
+      text-align:center;
+    }
+    .hero{
+      width:min(980px,100%);
+    }
+    .title{
+      font-size: clamp(34px, 5.2vw, 64px);
+      line-height:1.02;
+      margin: 0 0 12px;
+      letter-spacing:-.03em;
+    }
+    .subtitle{
+      margin: 0 auto;
+      max-width: 720px;
+      color: var(--muted);
+      font-size: clamp(14px, 2.1vw, 18px);
+      line-height: 1.6;
+    }
+    .scrollhint{
+      margin-top: 26px;
+      display:inline-flex;
+      gap:10px;
+      align-items:center;
+      padding: 10px 14px;
+      border-radius: 999px;
+      background: rgba(255,255,255,.07);
+      border:1px solid rgba(255,255,255,.12);
+      color: rgba(255,255,255,.75);
+      font-size: 13px;
+    }
+    .dot{
+      width:8px;height:8px;border-radius:999px;
+      background: linear-gradient(135deg,var(--accent),var(--accent2));
+      box-shadow:0 0 20px rgba(255,79,216,.35);
+    }
+
+    main{
+      width:min(1100px, 100%);
+      margin: 0 auto;
+      padding: 0 18px 90px;
+      display:flex;
+      flex-direction:column;
+      gap:18px;
+    }
+    .section{
+      display:grid;
+      grid-template-columns: 1.1fr .9fr;
+      gap:18px;
+      align-items:stretch;
+    }
+    @media (max-width: 860px){
+      .section{grid-template-columns:1fr}
+    }
+    .card{
+      background: rgba(255,255,255,.06);
+      border: 1px solid rgba(255,255,255,.12);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      overflow:hidden;
+    }
+    .cardInner{
+      padding: 20px;
+    }
+    .card h2{
+      margin:0 0 10px;
+      font-size: 22px;
+      letter-spacing:-.02em;
+    }
+    .pill{
+      display:inline-flex;
+      gap:10px;
+      align-items:center;
+      padding:8px 12px;
+      border-radius:999px;
+      background: rgba(255,255,255,.07);
+      border:1px solid rgba(255,255,255,.12);
+      color: var(--muted);
+      font-size:12px;
+      margin-bottom: 10px;
+    }
+    .photo{
+      width:100%;
+      height:100%;
+      min-height: 280px;
+      background-size: cover;
+      background-position: center;
+      position:relative;
+    }
+    .photo:after{
+      content:"";
+      position:absolute; inset:0;
+      background: linear-gradient(180deg, transparent 40%, rgba(0,0,0,.55));
+    }
+    .caption{
+      position:absolute;
+      left:16px; right:16px; bottom:14px;
+      z-index:1;
+      color: rgba(255,255,255,.92);
+      font-weight:700;
+      text-shadow: 0 8px 20px rgba(0,0,0,.55);
+    }
+
+    /* Scroll reveal */
+    .reveal{
+      opacity:0;
+      transform: translateY(18px);
+      transition: opacity .75s ease, transform .75s ease;
+    }
+    .reveal.show{
+      opacity:1;
+      transform: translateY(0);
+    }
+
+    footer{
+      padding: 26px 18px 40px;
+      text-align:center;
+      color: rgba(255,255,255,.55);
+      font-size: 13px;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Giriş Sözleşme Modal -->
+  <div id="gate" aria-hidden="false">
+    <div class="modal" id="modal">
+      <div class="badge"><span class="heart"></span> İlişki Sözleşmesi v1.0</div>
+      <h1>Sözleşmeyi imzalamak ister misin?</h1>
+      <p class="muted" id="gateText">
+        Bu sözleşme: bol kahkaha, sonsuz destek, kıskançlıktan değil sevgiden gelen minik tripler ve “iyi ki”leri içerir.
+        Aşağı kaydırınca da bizim hikaye akmaya başlıyor. ✨
+      </p>
+      <div class="actions">
+        <button class="yes" id="btnYes">Evet, imzalıyorum 💍</button>
+        <button class="no" id="btnNo">Hayır 🙃</button>
+      </div>
+      <div class="tiny" id="tinyNote">* İmza atınca geri dönüş yok (şaka şaka). Ama kalbime giriyorsun.</div>
+    </div>
+  </div>
+
+  <!-- Asıl Sayfa -->
+  <header class="reveal">
+    <div class="hero">
+      <h2 class="badge" style="justify-content:center;"><span class="dot"></span> Bizim Hikayemiz</h2>
+      <h1 class="title">Sen + Ben = <span style="background:linear-gradient(135deg,var(--accent),var(--accent2)); -webkit-background-clip:text; background-clip:text; color:transparent;">kaderin en tatlı hatası</span></h1>
+      <p class="subtitle">
+        Aşağı kaydır… Her bölümde bir anı, bir foto, bir cümle. Bunu senin için yaptım (evet biraz da hava atmak için 😌).
+      </p>
+      <div class="scrollhint"><span class="dot"></span> Aşağı kaydır</div>
+    </div>
+  </header>
+
+  <main>
+    <!-- Bölüm 1 -->
+    <section class="section reveal">
+      <div class="card">
+        <div class="cardInner">
+          <div class="pill">📍 Bölüm 1 • Tanışma</div>
+          <h2>İlk gün… “Bu kız farklı” dediğim an</h2>
+          <p class="muted">
+            İnstadan geç de olsa görmüş olman sayesinde konu nereye geldi :d
+            (Örnek: “Gülüşünle bütün günüm değişti.”)
+          </p>
+          <p class="muted">
+            <b>Mini not:</b> Her zaman bir yolunu bulup Hallederiz :).
+          </p>
+        </div>
+      </div>
+      <div class="card">
+        <div class="photo" style="background-image:url('https://pasteboard.co/9MF63j69fthF.jpg');">
+          <div class="caption">“O gün başladı her şey.”</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Bölüm 2 -->
+    <section class="section reveal">
+      <div class="card">
+        <div class="photo" style="background-image:url('https://pasteboard.co/kk6dcBhVwFr6.png');">
+          <div class="caption">İlk buluşma vibes ✨</div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="cardInner">
+          <div class="pill">☕ Bölüm 2 • İlk Buluşma</div>
+          <h2>“Hayatta ki en güzel tesadüf"</h2>
+          <p class="muted">
+            Kulaklık takılı ve arkada tek bir müzik. DKTT= Dilerim ki.
+          </p>
+          <p class="muted">
+            <i>“Ne olursa olsun yanında olacağım.”</i>
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Bölüm 3 -->
+    <section class="section reveal">
+      <div class="card">
+        <div class="cardInner">
+          <div class="pill">📸 Bölüm 3 • Anılar</div>
+          <h2>En sevdiğim 3 şey</h2>
+          <p class="muted">1) Gülüşün</p>
+          <p class="muted">2) “Anlayışın” bakışın</p>
+          <p class="muted">3) Yanımdayken dünyanın susması</p>
+          <p class="muted">
+           
+          </p>
+        </div>
+      </div>
+      <div class="card">
+        <div class="photo" style="background-image:url('https://pasteboard.co/DtmocH3QLlcP.jpg');">
+          <div class="caption">“Seninle her yer güzel.”</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Final -->
+    <section class="section reveal">
+      <div class="card">
+        <div class="photo" style="background-image:url('https://images.unsplash.com/photo-1516589178581-6cd7833ae3b2?auto=format&fit=crop&w=1600&q=80');">
+          <div class="caption">Final Sahnesi 💘</div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="cardInner">
+          <div class="pill">📝 Final • Söz</div>
+          <h2>Bir cümleyle: “Biz”</h2>
+          <p class="muted">
+            <b>“Ben senin en güvenli yerinim.”</b>
+          </p>
+          <p class="muted">
+            <b>— (Efe)</b>
+          </p>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="reveal">
+    Made with 💖 • “Evet” deyince başlayan güzel şeyler var.
+  </footer>
+
+  <script>
+    const gate = document.getElementById('gate');
+    const modal = document.getElementById('modal');
+    const btnYes = document.getElementById('btnYes');
+    const btnNo  = document.getElementById('btnNo');
+    const gateText = document.getElementById('gateText');
+    const tinyNote = document.getElementById('tinyNote');
+
+    // Kilit açılınca sayfayı yukarıdan başlat
+    function unlock(){
+      gate.style.display = 'none';
+      document.body.style.overflowY = 'auto';
+      window.scrollTo({top:0, behavior:'instant'});
+      revealAll(); // ilk ekranı da göster
+    }
+
+    // Başlangıçta scroll'u kitleyelim (daha tatlı durur)
+    document.body.style.overflowY = 'hidden';
+
+    btnYes.addEventListener('click', () => unlock());
+
+    btnNo.addEventListener('click', () => {
+      modal.classList.remove('shake');
+      void modal.offsetWidth; // reflow
+      modal.classList.add('shake');
+
+      gateText.textContent = "Hayır mı? Şimdi kalbimden bir bildirim düştü: “Eksik hissettim.” 🙃 Yine de bir şans ver…";
+      tinyNote.textContent = "İpucu: Evet’e basınca tatlı bir sürpriz başlıyor.";
+      btnNo.textContent = "Tamam tamam 😅";
+      btnYes.textContent = "Evet (özür dilerim)";
+    });
+
+    // Scroll reveal (IntersectionObserver)
+    const revealEls = Array.from(document.querySelectorAll('.reveal'));
+    const io = new IntersectionObserver((entries) => {
+      for (const e of entries){
+        if (e.isIntersecting){
+          e.target.classList.add('show');
+          io.unobserve(e.target);
+        }
+      }
+    }, {threshold: 0.12});
+
+    function revealAll(){
+      revealEls.forEach(el => io.observe(el));
+    }
+    revealAll();
+  </script>
+</body>
+</html>
+<style>
+  html, body{
+    margin:0;
+    padding:0;
+    width:100%;
+    height:100%;
+    overflow-x:hidden;
+    background:#000;
+  }
+
+  .wrap{
+    width:100%;
+    max-width:1100px;   /* istersen 100% de yaparız */
+    margin:0 auto;
+    padding:0 16px;
+  }
+
+  img{
+    width:100%;
+    height:auto;
+    display:block;
+    border-radius:18px; /* istersen kaldır */
+  }
+
+  .section{
+    padding:24px 0;
+  }
+</style>
